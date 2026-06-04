@@ -1,13 +1,314 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>public-data-ai-mockup</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataLab AI - 공공데이터 연구 어시스턴트</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo"></div>
+                <h1>DataLab AI</h1>
+            </div>
+            
+            <button class="new-chat-btn" id="btnNewProject">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                새 연구 프로젝트
+            </button>
+
+            <div class="nav-section">
+                <h3>최근 연구 기록</h3>
+                <ul class="history-list" id="historyList">
+                    <li class="active" data-id="1">용인/양주 공중화장실 비교분석</li>
+                    <li data-id="2">교통사고 다발구역 공간분석</li>
+                    <li data-id="3">23년 서울시 대기오염 요약</li>
+                </ul>
+            </div>
+            
+            <div class="user-profile">
+                <div class="avatar">R</div>
+                <div class="user-info">
+                    <span class="name">연구자님</span>
+                    <span class="plan">Pro Plan</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="topbar">
+                <h2 id="projectTitle">용인/양주 공중화장실 인프라 통합 분석</h2>
+                <div class="actions">
+                    <button class="btn-secondary" id="btnExport">내보내기</button>
+                    <button class="btn-primary" id="btnSettings">연구 목적 설정</button>
+                </div>
+            </header>
+
+            <div class="workspace">
+                <!-- Chat & Request Area -->
+                <section class="chat-area">
+                    <div class="chat-history" id="chatHistory">
+                        <!-- Default Greeting -->
+                        <div class="message ai-message">
+                            <div class="msg-icon"><div class="logo-small"></div></div>
+                            <div class="msg-content">
+                                <div class="msg-text">안녕하세요. 연구자님. 분석하고자 하는 공공데이터 파일(CSV)을 업로드하시거나 목적을 말씀해 주세요.</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input-wrapper">
+                        <!-- Suggestion Chips -->
+                        <div class="suggestion-chips" id="suggestionChips">
+                            <button class="chip" data-text="두 지자체 공중화장실 데이터를 합치고 시각화해줘.">📊 통합 및 시각화</button>
+                            <button class="chip" data-text="이 데이터에 결측치나 이상치가 있는지 먼저 검증해줄래?">🔍 결측치 검증</button>
+                        </div>
+
+                        <!-- Uploaded Files Display -->
+                        <div class="data-attachments" id="attachments" style="display: none;"></div>
+                        
+                        <div class="input-box">
+                            <input type="file" id="fileUpload" accept=".csv" style="display: none;" multiple>
+                            <button class="icon-btn tooltip" data-tooltip="데이터 업로드" id="btnUpload">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                            </button>
+                            <input type="text" id="promptInput" placeholder="연구 목적에 맞게 데이터 통합 및 시각화를 요청해보세요...">
+                            <button class="btn-primary" id="sendBtn">
+                                분석 실행
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Analysis Dashboard (Initially Hidden) -->
+                <section class="dashboard" id="dashboard">
+                    <!-- Dashboard content injected by JS -->
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Export Modal -->
+    <div class="modal-overlay" id="modalExport">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>결과 내보내기</h3>
+                <button class="icon-btn close-modal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div class="modal-body">
+                <div class="export-options">
+                    <label class="export-opt">
+                        <input type="radio" name="exportFormat" checked>
+                        <div class="opt-content">
+                            <strong>PDF 리포트</strong>
+                            <span>시각화 차트와 요약을 포함한 문서</span>
+                        </div>
+                    </label>
+                    <label class="export-opt">
+                        <input type="radio" name="exportFormat">
+                        <div class="opt-content">
+                            <strong>CSV (통합본)</strong>
+                            <span>전처리 및 병합이 완료된 원시 데이터</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary close-modal">취소</button>
+                <button class="btn-primary" id="btnConfirmExport">다운로드 시작</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="modalSettings">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>연구 목적 설정</h3>
+                <button class="icon-btn close-modal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-sm mb-4">AI가 분석 시 집중해야 할 목적을 선택해주세요.</p>
+                <select class="settings-select">
+                    <option>기본 탐색 및 시각화</option>
+                    <option>데이터 간의 상관관계 분석</option>
+                    <option>이상치 및 결측치 집중 검증 (데이터 정제)</option>
+                    <option selected>이종 데이터 통합 및 비교 (인프라 격차 분석)</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary close-modal">취소</button>
+                <button class="btn-primary close-modal">적용하기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Missing Value Data Modal -->
+    <div class="modal-overlay" id="modalMissingData">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h3>결측치 원본 행 확인 (양주시_공중화장실.csv)</h3>
+                <button class="icon-btn close-modal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div class="modal-body">
+                <table class="data-table">
+                    <thead>
+                        <tr><th>ID</th><th>지자체</th><th>주소 (소재지도로명)</th><th>면적 (화장실면적)</th><th>설치년도 (건립일자)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>34</td><td>양주시</td><td>경기 양주시 회정동 123</td><td class="text-warning">공란</td><td>2018-05-12</td></tr>
+                        <tr><td>89</td><td>양주시</td><td>경기 양주시 남면 신산리 54</td><td class="text-warning">공란</td><td>2015-11-03</td></tr>
+                        <tr><td>112</td><td>양주시</td><td>경기 양주시 광적면 가납리</td><td class="text-warning">NaN</td><td>2020-02-21</td></tr>
+                        <tr><td>145</td><td>양주시</td><td>경기 양주시 백석읍 오산리</td><td class="text-warning">0</td><td>2017-08-30</td></tr>
+                        <tr><td>201</td><td>양주시</td><td>경기 양주시 은현면 용암리</td><td class="text-warning">-</td><td>2019-12-11</td></tr>
+                    </tbody>
+                </table>
+                <p class="text-sm mt-4 text-warning">* 위 5개의 데이터는 면적 값이 비어있거나 '0', '-' 등의 비정상적인 값(이상치)으로 기입되어 결측치로 분류되었습니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates -->
+    <template id="tpl-dashboard">
+        <div class="dashboard-header">
+            <h3>분석 결과 요약</h3>
+            <div class="tabs" id="dashboardTabs">
+                <button class="tab-btn active" data-target="tab-overview">📊 시각화 및 통계</button>
+                <button class="tab-btn" data-target="tab-data">📋 정제된 통합 데이터</button>
+                <button class="tab-btn" data-target="tab-citation">📑 맞춤 해석 & 리포트</button>
+            </div>
+        </div>
+
+        <!-- Warning Alert -->
+        <div class="glass-card alert warning alert-animate mb-4" id="missingValueAlert">
+            <div class="alert-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <div class="alert-content">
+                <h4>데이터 신뢰도 경고: 결측치 및 이상치 감지</h4>
+                <p>양주시 데이터 '화장실면적' 컬럼에 <strong>5개의 결측치/이상치(공란, '0', '-')</strong>가 발견되었습니다. AI가 통계의 왜곡을 방지하기 위해 임의의 평균값으로 채우지 않고 '정보없음'으로 보존했습니다.</p>
+                <div class="alert-actions mt-2">
+                    <button class="btn-small btn-outline" id="btnShowMissingData">결측치 원본 5행 확인</button>
+                    <button class="btn-small" id="btnExcludeMissingData">결측치 5건 제외 후 차트 재구성</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs Content -->
+        <!-- Tab 1: Overview -->
+        <div class="tab-content active" id="tab-overview">
+            <div class="dashboard-grid">
+                <div class="glass-card col-span-2 slide-up">
+                    <div class="card-header">
+                        <h3>지역별 평균 화장실 면적 비교</h3>
+                        <select id="chartType" class="chart-select">
+                            <option value="bar">막대 차트 (Bar)</option>
+                            <option value="line">라인 차트 (Line)</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="areaChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="glass-card col-span-2 slide-up" style="animation-delay: 0.1s;">
+                    <div class="card-header">
+                        <h3>상세 통계 요약 (단위: ㎡)</h3>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table text-center">
+                            <thead>
+                                <tr><th>지자체</th><th>총 화장실 수</th><th>평균 면적</th><th>최대 면적</th><th>최소 면적</th><th>결측치 비율</th></tr>
+                            </thead>
+                            <tbody id="statsTableBody">
+                                <tr><td>용인시</td><td>214개</td><td>45.2</td><td>120.5</td><td>12.0</td><td>0.0%</td></tr>
+                                <tr><td>양주시</td><td>158개</td><td class="text-warning">32.8 (왜곡 가능성)</td><td>95.0</td><td>8.5</td><td class="text-warning">3.1% (5건)</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Data -->
+        <div class="tab-content" id="tab-data">
+            <div class="glass-card slide-up">
+                <div class="card-header">
+                    <h3>통합 추출 데이터 (용인 + 양주)</h3>
+                    <span class="badge">양식 통합 완료</span>
+                </div>
+                <div class="mb-4">
+                    <p class="text-sm" style="color: var(--accent-secondary);">
+                        * 연구 목적에 맞춰 두 지자체의 이종 데이터를 통합했습니다.<br>
+                        - <strong>용인시:</strong> '소재지도로명주소', '화장실면적' 컬럼 추출<br>
+                        - <strong>양주시:</strong> '소재지도로명', '면적' 컬럼 추출<br>
+                        👉 AI가 의미를 파악하여 <strong>'주소'</strong>와 <strong>'면적'</strong>이라는 통일된 컬럼으로 정규화 병합했습니다.
+                    </p>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table" id="mergedTable">
+                        <thead>
+                            <tr><th>지자체</th><th>주소 (정규화됨)</th><th>면적 (㎡)</th><th>데이터 원본 소스 컬럼</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>용인시</td><td>경기 용인시 처인구 금령로 50</td><td>54.2</td><td>소재지도로명주소 / 화장실면적</td></tr>
+                            <tr><td>용인시</td><td>경기 용인시 기흥구 구갈동 351</td><td>42.5</td><td>소재지도로명주소 / 화장실면적</td></tr>
+                            <tr><td>용인시</td><td>경기 용인시 수지구 포은대로 435</td><td>65.0</td><td>소재지도로명주소 / 화장실면적</td></tr>
+                            <tr><td>양주시</td><td>경기 양주시 부흥로 1533</td><td>35.0</td><td>소재지도로명 / 면적</td></tr>
+                            <tr><td>양주시</td><td>경기 양주시 평화로 1479</td><td>28.4</td><td>소재지도로명 / 면적</td></tr>
+                            <tr class="highlight-row missing-row"><td>양주시</td><td>경기 양주시 회정동 123</td><td class="text-warning">정보없음</td><td class="text-warning">결측치 보존 (면적 공란)</td></tr>
+                            <tr class="highlight-row missing-row"><td>양주시</td><td>경기 양주시 은현면 용암리</td><td class="text-warning">정보없음</td><td class="text-warning">결측치 보존 (면적 '-')</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Citation & Explanation -->
+        <div class="tab-content" id="tab-citation">
+            <div class="glass-card slide-up">
+                <div class="card-header">
+                    <h3>연구 맞춤 해석 및 인사이트</h3>
+                </div>
+                <div class="citation-content">
+                    <div style="background: rgba(99, 102, 241, 0.1); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-primary);">
+                        <h4 style="color: #a5b4fc; margin-bottom: 0.75rem;">💡 연구 목적 기반 데이터 해석 (인프라 격차 분석)</h4>
+                        <p class="text-sm mb-2">
+                            연구자님께서 설정하신 <strong>'이종 데이터 통합 및 비교 (인프라 격차 분석)'</strong> 목적에 따라, 두 지자체의 공중화장실 '면적' 데이터를 추출하여 비교 분석을 수행했습니다.
+                        </p>
+                        <ul class="text-sm" style="list-style-position: inside; color: var(--text-secondary); line-height: 1.8;">
+                            <li><strong>분석 결과:</strong> 결측치를 제외한 유효 데이터 기준, 용인시의 공중화장실 평균 면적(45.2㎡)이 양주시(35.0㎡) 대비 약 29% 넒은 것으로 나타났습니다.</li>
+                            <li><strong>해석 제안:</strong> 이는 용인시가 양주시에 비해 개별 공중화장실의 규모를 더 크게 조성하는 인프라 정책을 가지고 있거나, 인구 밀집도가 높아 대형 화장실 수요가 많기 때문일 수 있습니다.</li>
+                            <li><strong>추가 연구 방안:</strong> 인프라 격차의 원인을 더 깊이 파악하기 위해, 두 지자체의 '유동 인구 데이터'나 '예산 데이터'를 추가로 업로드하여 교차 분석하실 것을 권장합니다.</li>
+                        </ul>
+                    </div>
+
+                    <div class="citation-box mt-4">
+                        <h5>자동 생성 출처 표기 (APA 양식)</h5>
+                        <p class="text-sm mb-2" style="color: var(--text-secondary);">논문이나 보고서에 즉시 활용할 수 있도록 공공데이터포털 정보를 기반으로 출처를 자동 생성했습니다.</p>
+                        <p class="citation-text">용인시청. (2024). 용인시 공중화장실 현황 [데이터 세트]. 공공데이터포털. https://www.data.go.kr</p>
+                        <p class="citation-text">양주시청. (2024). 양주시 공중화장실 정보 [데이터 세트]. 공공데이터포털. https://www.data.go.kr</p>
+                        <a href="#" class="analysis-link mt-4" style="display: inline-flex; align-items: center; background: var(--bg-surface-hover); padding: 0.5rem 1rem; border-radius: 6px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                            데이터 정제 및 병합 알고리즘 프로세스 로그 파일 (JSON) 다운로드
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script src="main.js"></script>
+</body>
 </html>
