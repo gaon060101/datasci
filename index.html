@@ -31,9 +31,7 @@
             <div class="nav-section">
                 <h3>최근 연구 기록</h3>
                 <ul class="history-list" id="historyList">
-                    <li class="active" data-id="1">용인/양주 공중화장실 비교분석</li>
-                    <li data-id="2">교통사고 다발구역 공간분석</li>
-                    <li data-id="3">23년 서울시 대기오염 요약</li>
+                    <!-- Dynamic history will be populated here -->
                 </ul>
             </div>
             
@@ -52,7 +50,6 @@
                 <h2 id="projectTitle">용인/양주 공중화장실 인프라 통합 분석</h2>
                 <div class="actions">
                     <button class="btn-secondary" id="btnExport">내보내기</button>
-                    <button class="btn-primary" id="btnSettings">연구 목적 설정</button>
                 </div>
             </header>
 
@@ -72,8 +69,19 @@
                     <div class="chat-input-wrapper">
                         <!-- Suggestion Chips -->
                         <div class="suggestion-chips" id="suggestionChips">
-                            <button class="chip" data-text="두 지자체 공중화장실 데이터를 합치고 시각화해줘.">📊 통합 및 시각화</button>
+                            <button class="chip" data-text="두 지자체 데이터를 합치고 시각화해줘.">📊 데이터 시각화</button>
                             <button class="chip" data-text="이 데이터에 결측치나 이상치가 있는지 먼저 검증해줄래?">🔍 결측치 검증</button>
+                        </div>
+
+                        <!-- Research Purpose Dropdown (Always visible) -->
+                        <div class="purpose-wrapper mb-2" style="display: flex; gap: 0.5rem; align-items: center; background: var(--bg-surface); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border-subtle);">
+                            <label style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap;">연구 목적:</label>
+                            <select class="settings-select" id="purposeSelect" style="flex: 1; padding: 0.4rem; font-size: 0.85rem; border: none; background: transparent;">
+                                <option value="explore">기본 탐색 및 시각화</option>
+                                <option value="correlation">데이터 간의 상관관계 분석</option>
+                                <option value="anomaly">이상치 및 결측치 집중 검증 (데이터 정제)</option>
+                                <option value="infrastructure" selected>이종 데이터 통합 및 비교 (인프라 격차 분석)</option>
+                            </select>
                         </div>
 
                         <!-- Uploaded Files Display -->
@@ -133,28 +141,7 @@
         </div>
     </div>
 
-    <!-- Settings Modal -->
-    <div class="modal-overlay" id="modalSettings">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>연구 목적 설정</h3>
-                <button class="icon-btn close-modal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-            </div>
-            <div class="modal-body">
-                <p class="text-sm mb-4">AI가 분석 시 집중해야 할 목적을 선택해주세요.</p>
-                <select class="settings-select">
-                    <option>기본 탐색 및 시각화</option>
-                    <option>데이터 간의 상관관계 분석</option>
-                    <option>이상치 및 결측치 집중 검증 (데이터 정제)</option>
-                    <option selected>이종 데이터 통합 및 비교 (인프라 격차 분석)</option>
-                </select>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-secondary close-modal">취소</button>
-                <button class="btn-primary close-modal">적용하기</button>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Missing Value Data Modal -->
     <div class="modal-overlay" id="modalMissingData">
@@ -166,17 +153,20 @@
             <div class="modal-body">
                 <table class="data-table">
                     <thead>
-                        <tr><th>ID</th><th>지자체</th><th>주소 (소재지도로명)</th><th>면적 (화장실면적)</th><th>설치년도 (건립일자)</th></tr>
+                        <tr>
+                            <th>지자체(분석단위)</th>
+                            <th>총 데이터 수</th>
+                            <th>평균 연면적 (㎡)</th>
+                            <th>평균 석면면적 (㎡)</th>
+                            <th>안전관리인 지정률</th>
+                            <th>결측치 비율</th>
+                        </tr>
                     </thead>
                     <tbody>
-                        <tr><td>34</td><td>양주시</td><td>경기 양주시 회정동 123</td><td class="text-warning">공란</td><td>2018-05-12</td></tr>
-                        <tr><td>89</td><td>양주시</td><td>경기 양주시 남면 신산리 54</td><td class="text-warning">공란</td><td>2015-11-03</td></tr>
-                        <tr><td>112</td><td>양주시</td><td>경기 양주시 광적면 가납리</td><td class="text-warning">NaN</td><td>2020-02-21</td></tr>
-                        <tr><td>145</td><td>양주시</td><td>경기 양주시 백석읍 오산리</td><td class="text-warning">0</td><td>2017-08-30</td></tr>
-                        <tr><td>201</td><td>양주시</td><td>경기 양주시 은현면 용암리</td><td class="text-warning">-</td><td>2019-12-11</td></tr>
+                        <!-- Dynamic Missing Rows Injected Here -->
                     </tbody>
                 </table>
-                <p class="text-sm mt-4 text-warning">* 위 5개의 데이터는 면적 값이 비어있거나 '0', '-' 등의 비정상적인 값(이상치)으로 기입되어 결측치로 분류되었습니다.</p>
+                <p class="text-sm mt-4 text-warning">* 위 데이터들은 면적 값이 비어있거나 비정상적인 값으로 기입되어 결측치/이상치로 분류되었습니다.</p>
             </div>
         </div>
     </div>
@@ -199,9 +189,9 @@
             </div>
             <div class="alert-content">
                 <h4>데이터 신뢰도 경고: 결측치 및 이상치 감지</h4>
-                <p>양주시 데이터 '화장실면적' 컬럼에 <strong>5개의 결측치/이상치(공란, '0', '-')</strong>가 발견되었습니다. AI가 통계의 왜곡을 방지하기 위해 임의의 평균값으로 채우지 않고 '정보없음'으로 보존했습니다.</p>
+                <p>업로드된 데이터에서 <strong>결측치/이상치</strong>가 발견되었습니다. AI가 통계의 왜곡을 방지하기 위해 임의의 평균값으로 채우지 않고 '정보없음'으로 보존했습니다.</p>
                 <div class="alert-actions mt-2">
-                    <button class="btn-small btn-outline" id="btnShowMissingData">결측치 원본 5행 확인</button>
+                    <button class="btn-small btn-outline" id="btnShowMissingData">결측치 원본 상세 확인</button>
                     <button class="btn-small" id="btnExcludeMissingData">결측치 5건 제외 후 차트 재구성</button>
                 </div>
             </div>
@@ -213,14 +203,13 @@
             <div class="dashboard-grid">
                 <div class="glass-card col-span-2 slide-up">
                     <div class="card-header">
-                        <h3>지역별 평균 화장실 면적 비교</h3>
-                        <select id="chartType" class="chart-select">
-                            <option value="bar">막대 차트 (Bar)</option>
-                            <option value="line">라인 차트 (Line)</option>
-                        </select>
+                        <h3>목적별 다차원 시각화 분석</h3>
+                        <div style="font-size: 0.85rem; color: var(--text-secondary);">연구 목적에 최적화된 3가지 지표가 렌더링됩니다.</div>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="areaChart"></canvas>
+                    <div class="chart-container" style="display: flex; flex-direction: column; gap: 2rem; height: auto; padding: 1rem 0;">
+                        <div style="width: 100%; height: 400px; position: relative;"><canvas id="chart1"></canvas></div>
+                        <div style="width: 100%; height: 400px; position: relative;"><canvas id="chart2"></canvas></div>
+                        <div style="width: 100%; height: 400px; position: relative;"><canvas id="chart3"></canvas></div>
                     </div>
                 </div>
 
@@ -231,11 +220,16 @@
                     <div class="table-responsive">
                         <table class="data-table text-center">
                             <thead>
-                                <tr><th>지자체</th><th>총 화장실 수</th><th>평균 면적</th><th>최대 면적</th><th>최소 면적</th><th>결측치 비율</th></tr>
+                                <tr>
+                                    <th>지자체(분석단위)</th>
+                                    <th>총 데이터 수</th>
+                                    <th>평균 연면적 (㎡)</th>
+                                    <th>평균 석면면적 (㎡)</th>
+                                    <th>안전관리인 지정률</th>
+                                    <th>결측치 비율</th>
+                                </tr>
                             </thead>
                             <tbody id="statsTableBody">
-                                <tr><td>용인시</td><td>214개</td><td>45.2</td><td>120.5</td><td>12.0</td><td>0.0%</td></tr>
-                                <tr><td>양주시</td><td>158개</td><td class="text-warning">32.8 (왜곡 가능성)</td><td>95.0</td><td>8.5</td><td class="text-warning">3.1% (5건)</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -310,7 +304,6 @@
             </div>
         </div>
     </template>
-
-    <script type="module" src="/main.js"></script>
+    <script type="module" src="main.js?v=3"></script>
 </body>
 </html>

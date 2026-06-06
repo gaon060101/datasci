@@ -102,10 +102,9 @@ body {
 .icon-btn { background: transparent; border: none; color: var(--text-secondary); cursor: pointer; padding: 0.25rem; border-radius: 4px; transition: color 0.2s, background 0.2s; display: flex; align-items: center; justify-content: center; }
 .icon-btn:hover { color: var(--text-primary); background-color: rgba(255, 255, 255, 0.1); }
 
-/* Workspace */
 .workspace { display: flex; flex-grow: 1; overflow: hidden; position: relative; }
-.chat-area { flex: 1; display: flex; flex-direction: column; max-width: 800px; margin: 0 auto; padding: 2rem; height: 100%; transition: max-width 0.3s; }
-.dashboard.active ~ .chat-area { max-width: 500px; } /* Shrink chat when dashboard opens */
+.chat-area { flex: 1; display: flex; flex-direction: column; max-width: 800px; margin: 0 auto; padding: 2rem; height: 100%; transition: all 0.3s; }
+.workspace:has(.dashboard.active) .chat-area { max-width: 450px; margin: 0; }
 
 .chat-history { flex-grow: 1; overflow-y: auto; padding-bottom: 1rem; display: flex; flex-direction: column; gap: 1.5rem; }
 
