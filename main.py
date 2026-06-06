@@ -21,12 +21,10 @@ class ChatRequest(BaseModel):
 
 # Load Environment Variables
 load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
-else:
-    print("WARNING: GEMINI_API_KEY not found in .env")
+def get_gemini_key():
+    return os.environ.get("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY")
+
 
 app = FastAPI()
 
@@ -212,7 +210,9 @@ async def analyze_data(
         insight_text = ""
         
         try:
-            if GEMINI_API_KEY:
+            api_key = get_gemini_key()
+            if api_key:
+                genai.configure(api_key=api_key)
                 model = genai.GenerativeModel('gemini-2.0-flash', system_instruction=context_str)
                 chat_session = model.start_chat(history=[])
                 response = chat_session.send_message("제공된 데이터를 기반으로 전문가로서의 첫 분석 인사이트를 마크다운 리스트 형식으로 요약해줘. 결측치가 있다면 어떻게 처리되었는지 언급해줘.")
