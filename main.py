@@ -219,7 +219,7 @@ async def analyze_data(
                 insight_text = response.text
                 SESSIONS[session_id] = chat_session
             else:
-                insight_text = "⚠️ Gemini API 키가 설정되지 않아 AI 분석을 수행할 수 없습니다."
+                insight_text = f"⚠️ Gemini API 키가 설정되지 않아 AI 분석을 수행할 수 없습니다. (현재 인식된 환경 변수: {len(os.environ.keys())}개)"
         except Exception as e:
             insight_text = f"✅ (데모 자동 생성 모드 활성화) \n사용자님의 목적 **'{purpose}'** 에 따른 인사이트 요약:\n\n- **데이터 특성**: 결측치가 일부 발견되었으나, 통계 왜곡을 방지하기 위해 '정보없음'으로 보존 처리되었습니다.\n- **핵심 패턴**: 지자체별 석면 면적 편차가 뚜렷하게 관찰되며, 이는 석면 해체 및 제거 예산 분배의 주요 지표로 활용될 수 있습니다.\n- **상관성 요약**: 연면적 규모 대비 안전관리인 지정률의 상관관계가 분석되었습니다. 일부 대형 건축물에서 석면 건축물 여부가 'Y'로 나타났습니다.\n\n*(현재 Google API 일일 한도가 소진되었거나 네트워크 오류가 발생하여, 시연을 위해 데모 인사이트를 출력합니다. 원본 오류: {str(e)[:30]}...)*"
 
