@@ -47,7 +47,7 @@
         <!-- Main Content -->
         <main class="main-content">
             <header class="topbar">
-                <h2 id="projectTitle">용인/양주 공중화장실 인프라 통합 분석</h2>
+                <h2 id="projectTitle">연수/고창 석면 건축물 인프라 통합 분석</h2>
                 <div class="actions">
                     <button class="btn-secondary" id="btnExport">내보내기</button>
                 </div>
@@ -147,7 +147,7 @@
     <div class="modal-overlay" id="modalMissingData">
         <div class="modal modal-lg">
             <div class="modal-header">
-                <h3>결측치 원본 행 확인 (양주시_공중화장실.csv)</h3>
+                <h3>결측치 원본 행 확인 (석면조사대상_건축물현황.csv)</h3>
                 <button class="icon-btn close-modal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
             </div>
             <div class="modal-body">
@@ -241,30 +241,30 @@
         <div class="tab-content" id="tab-data">
             <div class="glass-card slide-up">
                 <div class="card-header">
-                    <h3>통합 추출 데이터 (용인 + 양주)</h3>
+                    <h3>통합 추출 데이터 (인천 연수구 + 전북 고창군)</h3>
                     <span class="badge">양식 통합 완료</span>
                 </div>
                 <div class="mb-4">
                     <p class="text-sm" style="color: var(--accent-secondary);">
                         * 연구 목적에 맞춰 두 지자체의 이종 데이터를 통합했습니다.<br>
-                        - <strong>용인시:</strong> '소재지도로명주소', '화장실면적' 컬럼 추출<br>
-                        - <strong>양주시:</strong> '소재지도로명', '면적' 컬럼 추출<br>
-                        👉 AI가 의미를 파악하여 <strong>'주소'</strong>와 <strong>'면적'</strong>이라는 통일된 컬럼으로 정규화 병합했습니다.
+                        - <strong>연수구:</strong> '주소', '연면적', '석면면적' 컬럼 추출<br>
+                        - <strong>고창군:</strong> '소재지', '건축물연면적', '석면자재면적' 컬럼 추출<br>
+                        👉 AI가 의미를 파악하여 <strong>'주소'</strong>와 <strong>'석면면적'</strong>이라는 통일된 컬럼으로 정규화 병합했습니다.
                     </p>
                 </div>
                 <div class="table-responsive">
                     <table class="data-table" id="mergedTable">
                         <thead>
-                            <tr><th>지자체</th><th>주소 (정규화됨)</th><th>면적 (㎡)</th><th>데이터 원본 소스 컬럼</th></tr>
+                            <tr><th>지자체</th><th>주소 (정규화됨)</th><th>석면면적 (㎡)</th><th>데이터 원본 소스 컬럼</th></tr>
                         </thead>
                         <tbody>
-                            <tr><td>용인시</td><td>경기 용인시 처인구 금령로 50</td><td>54.2</td><td>소재지도로명주소 / 화장실면적</td></tr>
-                            <tr><td>용인시</td><td>경기 용인시 기흥구 구갈동 351</td><td>42.5</td><td>소재지도로명주소 / 화장실면적</td></tr>
-                            <tr><td>용인시</td><td>경기 용인시 수지구 포은대로 435</td><td>65.0</td><td>소재지도로명주소 / 화장실면적</td></tr>
-                            <tr><td>양주시</td><td>경기 양주시 부흥로 1533</td><td>35.0</td><td>소재지도로명 / 면적</td></tr>
-                            <tr><td>양주시</td><td>경기 양주시 평화로 1479</td><td>28.4</td><td>소재지도로명 / 면적</td></tr>
-                            <tr class="highlight-row missing-row"><td>양주시</td><td>경기 양주시 회정동 123</td><td class="text-warning">정보없음</td><td class="text-warning">결측치 보존 (면적 공란)</td></tr>
-                            <tr class="highlight-row missing-row"><td>양주시</td><td>경기 양주시 은현면 용암리</td><td class="text-warning">정보없음</td><td class="text-warning">결측치 보존 (면적 '-')</td></tr>
+                            <tr><td>연수구</td><td>인천광역시 연수구 벚꽃로 106</td><td>125.4</td><td>주소 / 석면면적</td></tr>
+                            <tr><td>연수구</td><td>인천광역시 연수구 원인재로 115</td><td>85.2</td><td>주소 / 석면면적</td></tr>
+                            <tr><td>연수구</td><td>인천광역시 연수구 청능대로 109</td><td>320.0</td><td>주소 / 석면면적</td></tr>
+                            <tr><td>고창군</td><td>전북특별자치도 고창군 고창읍 모양성로 1</td><td>45.5</td><td>소재지 / 석면자재면적</td></tr>
+                            <tr><td>고창군</td><td>전북특별자치도 고창군 고창읍 중앙로 245</td><td>110.8</td><td>소재지 / 석면자재면적</td></tr>
+                            <tr class="highlight-row missing-row"><td>고창군</td><td>전북특별자치도 고창군 아산면 선운사로 250</td><td class="text-warning">정보없음</td><td class="text-warning">결측치 보존 (면적 공란)</td></tr>
+                            <tr class="highlight-row missing-row"><td>고창군</td><td>전북특별자치도 고창군 무장면 무장읍성길 10</td><td class="text-warning">정보없음</td><td class="text-warning">결측치 보존 (면적 '-')</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -281,11 +281,11 @@
                     <div style="background: rgba(99, 102, 241, 0.1); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-primary);">
                         <h4 style="color: #a5b4fc; margin-bottom: 0.75rem;">💡 연구 목적 기반 데이터 해석 (인프라 격차 분석)</h4>
                         <p class="text-sm mb-2">
-                            연구자님께서 설정하신 <strong>'이종 데이터 통합 및 비교 (인프라 격차 분석)'</strong> 목적에 따라, 두 지자체의 공중화장실 '면적' 데이터를 추출하여 비교 분석을 수행했습니다.
+                            연구자님께서 설정하신 <strong>'이종 데이터 통합 및 비교 (인프라 격차 분석)'</strong> 목적에 따라, 두 지자체의 석면 건축물 '면적' 데이터를 추출하여 비교 분석을 수행했습니다.
                         </p>
                         <ul class="text-sm" style="list-style-position: inside; color: var(--text-secondary); line-height: 1.8;">
-                            <li><strong>분석 결과:</strong> 결측치를 제외한 유효 데이터 기준, 용인시의 공중화장실 평균 면적(45.2㎡)이 양주시(35.0㎡) 대비 약 29% 넒은 것으로 나타났습니다.</li>
-                            <li><strong>해석 제안:</strong> 이는 용인시가 양주시에 비해 개별 공중화장실의 규모를 더 크게 조성하는 인프라 정책을 가지고 있거나, 인구 밀집도가 높아 대형 화장실 수요가 많기 때문일 수 있습니다.</li>
+                            <li><strong>분석 결과:</strong> 결측치를 제외한 유효 데이터 기준, 연수구의 건축물당 평균 석면면적(185.2㎡)이 고창군(95.0㎡) 대비 약 94% 넒은 것으로 나타났습니다.</li>
+                            <li><strong>해석 제안:</strong> 이는 연수구가 고창군에 비해 대형 상가나 공공시설의 규모를 더 크게 조성하는 도시 인프라 특성을 가지고 있거나, 산업단지 관련 시설이 많기 때문일 수 있습니다.</li>
                             <li><strong>추가 연구 방안:</strong> 인프라 격차의 원인을 더 깊이 파악하기 위해, 두 지자체의 '유동 인구 데이터'나 '예산 데이터'를 추가로 업로드하여 교차 분석하실 것을 권장합니다.</li>
                         </ul>
                     </div>
@@ -293,8 +293,8 @@
                     <div class="citation-box mt-4">
                         <h5>자동 생성 출처 표기 (APA 양식)</h5>
                         <p class="text-sm mb-2" style="color: var(--text-secondary);">논문이나 보고서에 즉시 활용할 수 있도록 공공데이터포털 정보를 기반으로 출처를 자동 생성했습니다.</p>
-                        <p class="citation-text">용인시청. (2024). 용인시 공중화장실 현황 [데이터 세트]. 공공데이터포털. https://www.data.go.kr</p>
-                        <p class="citation-text">양주시청. (2024). 양주시 공중화장실 정보 [데이터 세트]. 공공데이터포털. https://www.data.go.kr</p>
+                        <p class="citation-text">인천광역시 연수구. (2024). 연수구 석면조사대상 건축물 현황 [데이터 세트]. 공공데이터포털. https://www.data.go.kr</p>
+                        <p class="citation-text">전북특별자치도 고창군. (2024). 고창군 석면조사건축물 현황 [데이터 세트]. 공공데이터포털. https://www.data.go.kr</p>
                         <a href="#" class="analysis-link mt-4" style="display: inline-flex; align-items: center; background: var(--bg-surface-hover); padding: 0.5rem 1rem; border-radius: 6px;">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
                             데이터 정제 및 병합 알고리즘 프로세스 로그 파일 (JSON) 다운로드
