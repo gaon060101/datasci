@@ -444,6 +444,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const purposeSelect = document.getElementById('purposeSelect');
         const purposeText = purposeSelect ? purposeSelect.options[purposeSelect.selectedIndex].text : "기본 탐색 및 시각화";
 
+        let promptsHtml = '';
+        if (data.recommended_prompts && data.recommended_prompts.length > 0) {
+            promptsHtml = `
+            <div class="recommended-prompts mt-4">
+                <h5 style="color: var(--accent-primary); margin-bottom: 0.5rem; font-size: 1rem;">🎯 AI 추천 후속 연구 질문 (클릭 시 자동 입력)</h5>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    ${data.recommended_prompts.map(p => `
+                        <div class="prompt-card hover-effect" style="background: var(--bg-surface-hover); border: 1px solid var(--border-subtle); padding: 1rem; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('promptInput').value='${p.prompt}'; document.getElementById('promptInput').focus();">
+                            <strong style="display: block; font-size: 0.95rem; margin-bottom: 0.4rem; color: #fff;">${p.title}</strong>
+                            <span style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4; display: block;">${p.prompt}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>`;
+        }
+
         // Clear previous dummy insight and put the real one
         insightContainer.innerHTML = `
             <div style="background: rgba(99, 102, 241, 0.1); padding: 1.5rem; border-radius: 8px; border-left: 4px solid var(--accent-primary);">
@@ -453,6 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </p>
                 <div class="insight-text" style="font-size:0.9rem; line-height:1.7; white-space:pre-wrap; margin-top: 1rem;">${data.insight}</div>
             </div>
+            ${promptsHtml}
             <div class="citation-box mt-4">
                 <h5>자동 생성 출처 표기 (데이터 소스)</h5>
                 ${data.citations.map(c => `<p class="citation-text">${c}</p>`).join('')}

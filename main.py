@@ -290,7 +290,29 @@ async def analyze_data(
 
             insight_text = f"✅ **(오프라인 심층 리포트 모드)** 사전에 학습된 내부 알고리즘을 기반으로 한 맞춤형 상세 리포트를 제공합니다.\n\n{detailed_report}"
 
-        # 4. Return Final JSON
+        # 4. Generate Recommended Prompts based on purpose
+        if "시각화" in purpose or "탐색" in purpose:
+            recommended_prompts = [
+                {"title": "결측치 영향 분석 시각화", "prompt": "각 지자체별로 결측치 비율이 가장 높은 컬럼은 무엇이며, 이것이 전체적인 시각화 및 인사이트 도출에 어떤 영향을 미치는지 설명해줘."},
+                {"title": "위험 구역 버블 차트 생성", "prompt": "연면적 대비 석면 자재 면적 비율이 30%를 초과하는 위험 건물들을 추려내고, 이를 지도에 버블 차트로 시각화하기 위한 파이썬 코드를 작성해줘."}
+            ]
+        elif "정책" in purpose or "예산" in purpose or "의사결정" in purpose:
+            recommended_prompts = [
+                {"title": "예산 집중 투입 지역 산출", "prompt": "석면 면적 총합과 안전관리인 미지정 비율이라는 두 가지 지표를 가중 평가하여, 내년도 철거 예산을 가장 먼저 투입해야 할 상위 3개 지자체를 산출해줘."},
+                {"title": "소규모 고위험 건물 관리 방안", "prompt": "건축물 연면적은 작지만 실제 사용된 석면 면적이 넒은 '소규모 고위험 건물'의 리스트를 뽑고, 법적 사각지대에 놓인 이들을 관리할 정책 대안을 제시해줘."}
+            ]
+        elif "학술" in purpose or "연구" in purpose:
+            recommended_prompts = [
+                {"title": "비정규 분포 정규화(로그 변환)", "prompt": "석면면적 데이터의 우측 꼬리 분포(Right-skewed) 한계를 해결하기 위해, 면적 데이터에 로그 변환(Log Transformation)을 적용한 전후의 기술통계량을 비교 분석해줘."},
+                {"title": "변수 간 상관관계 회귀분석", "prompt": "건축물의 규모(연면적)와 석면 자재 사용 비율 간에 음의 상관관계가 존재하는지 검증하기 위한 회귀분석 모델(Regression Model) 수식을 제안해줘."}
+            ]
+        else:
+            recommended_prompts = [
+                {"title": "지역별 편차 요약 및 원인 추론", "prompt": "조사된 데이터 중 석면 관리 상태(안전관리인 지정률 등)가 가장 우수한 지역과 가장 취약한 지역의 특징을 비교하고, 이러한 편차가 발생한 원인을 추론해줘."},
+                {"title": "실무 인력 부족 병목 현상", "prompt": "안전관리인이 지정된 건물 수 대비 실제 석면 건축물 수가 얼마나 초과하는지 수치화하고, 실무 현장의 인력 부족 병목 현상을 해결할 대안을 마련해줘."}
+            ]
+
+        # 5. Return Final JSON
         return {
             "session_id": session_id,
             "reply": "분석 결과가 준비되었습니다. 우측 대시보드를 확인해주세요.",
@@ -299,6 +321,7 @@ async def analyze_data(
             "missing_info": missing_data_info,
             "merged_preview": merged_data,
             "insight": insight_text,
+            "recommended_prompts": recommended_prompts,
             "citations": [
                 f"분석 데이터: {', '.join(dataframes.keys())}",
                 f"적용 기준: 결측치 보존 및 {purpose} 중심 분석"
